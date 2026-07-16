@@ -8,15 +8,12 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-
-add_executable(car_cpp src/main.cpp tools/pub_node.cpp)
-# target_include_directories(car_cpp PUBLIC ${rclcpp_INCLUDE_DIRS})
-# target_link_libraries(car_cpp ${rclcpp_LIBRARIES})
-ament_target_dependencies(car_cpp rclcpp)
-target_include_directories(car_cpp PUBLIC include/car)
-install(TARGETS car_cpp DESTINATION lib/${PROJECT_NAME})
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
+find_package(libxr REQUIRED)
+include_directories(include/${PROJECT_NAME})
+ament_auto_add_executable(${PROJECT_NAME} src/main.cpp tools/pub_node.cpp)
+target_link_libraries(${PROJECT_NAME} libxr::xr)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
