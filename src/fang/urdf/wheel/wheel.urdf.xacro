@@ -4,8 +4,8 @@
 
     <xacro:macro name="wheel" params="wheel_name xyz axis_xyz rpy:='0 0.0 0.0'">
         <link name="${wheel_name}_link">
-            <xacro:cylinder_visual r="0.1" h="0.03" rpy="${rpy}"/>
-            <xacro:cylinder_collision r="0.1" h="0.03" rpy="${rpy}"/>
+            <xacro:cylinder_visual r="0.075" h="0.04" rpy="${rpy}"/>
+            <xacro:cylinder_collision r="0.075" h="0.04" rpy="${rpy}"/>
         </link>
 
         <joint name="${wheel_name}_joint" type="continuous">

@@ -3,8 +3,8 @@
     <xacro:include filename="base.urdf.xacro"/>
     <xacro:include filename="wheel/wheel.urdf.xacro"/>
 
-    <xacro:base_xacro length="0.3" radius="0.3"/>
-    <xacro:wheel wheel_name="wheel_1" xyz="0.3 0.0 -0.15" axis_xyz="1.0 0.0 0.0" rpy="0.0 1.57079 0.0"/>
-    <xacro:wheel wheel_name="wheel_2" xyz="-0.15 0.25980 -0.15" axis_xyz="0.5 -0.86603 0.0" rpy="0.0 1.57079 2.09440"/>
-    <xacro:wheel wheel_name="wheel_3" xyz="-0.15 -0.25980 -0.15" axis_xyz="0.5 0.86603 0.0" rpy="0.0 1.57079 1.04720"/>
+    <xacro:base_xacro length="0.05" radius="0.185"/>
+    <xacro:wheel wheel_name="wheel_1" xyz="0.185 0.0 0" axis_xyz="1.0 0.0 0.0" rpy="0.0 1.57079 0.0"/>
+    <xacro:wheel wheel_name="wheel_2" xyz="-0.0925 0.16021 0.0" axis_xyz="0.5 -0.86603 0.0" rpy="0.0 1.57079 2.09440"/>
+    <xacro:wheel wheel_name="wheel_3" xyz="-0.0925 -0.16021 0.0" axis_xyz="0.5 0.86603 0.0" rpy="0.0 1.57079 1.04720"/>
 </robot>
