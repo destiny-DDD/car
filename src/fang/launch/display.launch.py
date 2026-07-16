@@ -9,7 +9,7 @@ def generate_launch_description():
 
     # 默认 xacro 文件路径
     xacro_file = os.path.join(pkg_dir, "urdf", "car.urdf.xacro")
-    default_rviz_config_path=os.path.join(pkg_dir,"config","fang.rviz")
+    default_rviz_config_path=os.path.join(pkg_dir,"config","rviz.rviz")
 
     action_declare_arg_mode_path=launch.actions.DeclareLaunchArgument(
         name='model',
@@ -26,6 +26,11 @@ def generate_launch_description():
                 ])}]
     )
 
+    action_joint_state_publisher_gui=launch_ros.actions.Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+    )
+
     action_joint_state_publisher=launch_ros.actions.Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -34,12 +39,13 @@ def generate_launch_description():
     action_rviz_node=launch_ros.actions.Node(
         package='rviz2',
         executable='rviz2',
-        # arguments=['-d',default_rviz_config_path],
+        arguments=['-d',default_rviz_config_path],
    )
 
     return launch.LaunchDescription([
         action_declare_arg_mode_path,
         action_robot_state_publisher,
+        action_joint_state_publisher_gui,
         action_joint_state_publisher,
         action_rviz_node
     ])
