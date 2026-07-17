@@ -1,6 +1,5 @@
 #include "pub_node.hpp"
 #include "geometry_msgs/msg/twist.hpp"
-#include <iterator>
 #include <rclcpp/logger.hpp>
 #include <unistd.h>
 
@@ -25,56 +24,33 @@ CarPublisher::CarPublisher(const std::string &name) : Node(name) {
                        LibXR::Terminal<1024, 64, 16, 128>::ThreadFun,
                        "terminal", 81900, LibXR::Thread::Priority::MEDIUM);
 
-  // topic_ = LibXR::Topic::FindOrCreate<std::array<char, 5>>("topic");
-  // r_topic_ = LibXR::Topic::FindOrCreate<std::array<char, 5>>("topic");
-  // void (*r_cb_fun)(bool, CarPublisher *self, LibXR::RawData &data) =
-  //     [](bool, CarPublisher *self, LibXR::RawData &data) {
-  //       auto str = reinterpret_cast<std::array<char, 5> *>(data.addr_);
-  //       // std::cout << (*str)[0] << (*str)[1] << (*str)[2] << (*str)[3]
-  //       //           << (*str)[4] << '\n';
-  //       self->ser();
-  //     };
-  // auto r_cb = LibXR::Topic::Callback::Create(r_cb_fun, this);
-  // r_topic_.RegisterCallback(r_cb);
-
   static LibXR::HardwareContainer peripherals{
       LibXR::Entry<LibXR::RamFS>({*ramfs_, {"ramfs"}}),
       LibXR::Entry<LibXR::UART>({*uart_client_, {"uart_client"}}),
   };
-  //创建Topic
+
+  // 创建Topic
   LibXR::Topic::Domain domain("first");
-  wheel=LibXR::Topic::CreateTopic<std::vector<uint8_t>>("wheel",&domain);
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("wheel", &domain);
+
+  // 注册接收回调
+  cb0 = LibXR::Topic::Callback::Create(
+      [](bool, CarPublisher *self, const WheelMsg &msg) {
+        std::cout << msg.speed_x << " " << msg.speed_y << " " << msg.ang_z
+                  << std::endl;
+      },
+      this);
+  wheel.RegisterCallback(cb0);
 }
 
 void CarPublisher::send_data_callback(
     const geometry_msgs::msg::Twist::SharedPtr msg_data) {
-  RCLCPP_INFO(this->get_logger(), "测试开启");
-  cmd = {0x0A, 0x0B};
-  // x
-  cmd.push_back(0x00);
-  cmd.push_back(0x00);
-  // y
-  cmd.push_back(0x00);
-  cmd.push_back(0x00);
-  // 角速度
-  cmd.push_back(0x00);
-  cmd.push_back(0x00);
-
-  cmd.push_back(0x0C);
-
-  ser(cmd);
+  data.speed_x = msg_data->linear.x;
+  data.speed_y = msg_data->linear.y;
+  data.ang_z = msg_data->angular.z;
+  ser(data);
 }
 
-void CarPublisher::ser(const std::vector<uint8_t>& cmd) {
-  // // LibXR::Topic::Domain tracker_domain = LibXR::Topic::Domain("tracker");
-  // //   std::string msg = "hello\n";
-  // //   uart_client_->Write(msg.data(), msg.size());
-  // int hello = 1;
-  // std::array<char, 5> data{'h', 'e', 'l', 'l', 'o'};
-  // sleep(1);
-  // topic_.Publish(data);
-  //发布Topic
-  wheel.Publish(cmd);
+void CarPublisher::ser(WheelMsg &speed) { wheel.Publish(speed); }
 
-}
 } // namespace car_pub

@@ -23,17 +23,18 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
 }
 
 class CarPublisher : public rclcpp::Node {
-public:
-  explicit CarPublisher(const std::string &name);
-  void send_data_callback(const geometry_msgs::msg::Twist::SharedPtr msg_data);
-  void ser(const std::vector<uint8_t>& cmd);
-
 private:
   // ros2
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_;
 
   // send
-  std::vector<uint8_t> cmd;
+  struct WheelMsg {
+    float speed_x;
+    float speed_y;
+    float ang_z;
+  };
+
+  WheelMsg data;
 
   // LibXR
   std::unique_ptr<LibXR::HardwareContainer> peripherals_;
@@ -43,8 +44,14 @@ private:
   std::unique_ptr<LibXR::Thread> term_thread_;
 
   LibXR::Topic wheel;
+  LibXR::Topic::Callback cb0;
+
+public:
+  explicit CarPublisher(const std::string &name);
+  void send_data_callback(const geometry_msgs::msg::Twist::SharedPtr msg_data);
+  void ser(WheelMsg &speed);
 };
 
-} // namespace car
+} // namespace car_pub
 
 #endif
