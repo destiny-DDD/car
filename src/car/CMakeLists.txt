@@ -12,7 +12,10 @@ find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 find_package(libxr REQUIRED)
 include_directories(include/${PROJECT_NAME})
-ament_auto_add_executable(${PROJECT_NAME} src/main.cpp tools/pub_node.cpp)
+
+file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+ament_auto_add_executable(${PROJECT_NAME} ${SRC})
 target_link_libraries(${PROJECT_NAME} libxr::xr)
 
 # uncomment the following section in order to fill in
@@ -31,4 +34,4 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_package()
+ament_auto_package(INSTALL_TO_SHARE ${PROJRCT_NAME})
