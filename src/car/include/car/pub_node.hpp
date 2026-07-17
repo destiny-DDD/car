@@ -26,7 +26,7 @@ class CarPublisher : public rclcpp::Node {
 public:
   explicit CarPublisher(const std::string &name);
   void send_data_callback(const geometry_msgs::msg::Twist::SharedPtr msg_data);
-  void ser();
+  void ser(const std::vector<uint8_t>& cmd);
 
 private:
   // ros2
@@ -42,7 +42,7 @@ private:
   std::unique_ptr<LibXR::Terminal<1024, 64, 16, 128>> terminal_;
   std::unique_ptr<LibXR::Thread> term_thread_;
 
-  LibXR::Topic topic_;
+  LibXR::Topic wheel;
 };
 
 } // namespace car
