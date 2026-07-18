@@ -44,7 +44,7 @@ private:
   std::unique_ptr<LibXR::Thread> term_thread_;
 
   LibXR::Topic wheel;
-  LibXR::Topic::Callback cb0;
+  // LibXR::Topic::Callback cb0;
 
 public:
   explicit CarPublisher(const std::string &name);

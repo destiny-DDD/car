@@ -23,6 +23,14 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
 
 class CarSubscription : public rclcpp::Node {
 private:
+
+  // send
+  struct WheelMsg {
+    float speed_x;
+    float speed_y;
+    float ang_z;
+  };
+
   // LibXR
   std::unique_ptr<LibXR::HardwareContainer> peripherals_;
   std::unique_ptr<LibXR::RamFS> ramfs_;
@@ -30,9 +38,12 @@ private:
   std::unique_ptr<LibXR::Terminal<1024, 64, 16, 128>> terminal_;
   std::unique_ptr<LibXR::Thread> term_thread_;
 
+  LibXR::Topic wheel;
+  LibXR::Topic::Callback cb0;
+
 public:
   explicit CarSubscription(const std::string &name);
-  void receive();
+  // void receive();
 };
 
 } // namespace car_sub

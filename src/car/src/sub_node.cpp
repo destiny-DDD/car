@@ -17,7 +17,19 @@ CarSubscription::CarSubscription(const std::string &name) : Node(name) {
                        "terminal", 81900, LibXR::Thread::Priority::MEDIUM);
   static LibXR::HardwareContainer peripherals{
       LibXR::Entry<LibXR::RamFS>({*ramfs_, {"ramfs"}}),
-      LibXR::Entry<LibXR::UART>({*uart_client_, {"uart_client"}}),
-  };
+      LibXR::Entry<LibXR::UART>({*uart_client_, {"uart_client"}}), 
+    };
+
+  LibXR::Topic::Domain domain("libxr_def_domain");
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("topic1",&domain);
+
+//   注册接收回调
+  cb0 = LibXR::Topic::Callback::Create(
+      [](bool, CarSubscription *self, const WheelMsg &msg) {
+        std::cout <<"sub "<< msg.speed_x << " " << msg.speed_y << " " << msg.ang_z
+                  << std::endl;
+      },
+      this);
+  wheel.RegisterCallback(cb0);
 }
 } // namespace car_sub
