@@ -13,13 +13,13 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
   using namespace LibXR;
   static ApplicationManager appmgr;
 
-  static SharedTopic shared_topic(
-      hw, appmgr, "uart_client", 256,
-      {{"ahrs_quaternion"}, {"lob_shot"}, {"reset"}});
+  // static SharedTopic shared_topic(
+  //     hw, appmgr, "uart_client", 256,
+  //     {{"topic1", "libxr_def_domain"}});
 
   static SharedTopicClient shared_topic_client(
       hw, appmgr, "uart_client", 256,
-      {{"target_euler"}, {"fire_notify", "tracker"}, {"target_num"}});
+      {{"topic1", "libxr_def_domain"}});
 }
 
 class CarPublisher : public rclcpp::Node {

@@ -17,7 +17,7 @@ CarPublisher::CarPublisher(const std::string &name) : Node(name) {
   //ttl
   // auto vid = this->declare_parameter<std::string>("vid", "1a86");
   // auto pid = this->declare_parameter<std::string>("pid", "7523");
-  //linear
+  // linear
   auto vid = this->declare_parameter<std::string>("vid", "16d0");
   auto pid = this->declare_parameter<std::string>("pid", "1492");
   uart_client_ = std::make_unique<LibXR::LinuxUART>(
@@ -33,10 +33,12 @@ CarPublisher::CarPublisher(const std::string &name) : Node(name) {
       LibXR::Entry<LibXR::UART>({*uart_client_, {"uart_client"}}),
   };
 
+
   // 创建Topic
   LibXR::Topic::Domain domain("libxr_def_domain");
   wheel = LibXR::Topic::CreateTopic<WheelMsg>("topic1",&domain);
 
+  XRobotMain(peripherals);
   // 注册接收回调
   // cb0 = LibXR::Topic::Callback::Create(
   //     [](bool, CarPublisher *self, const WheelMsg &msg) {
