@@ -19,7 +19,7 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
 
   static SharedTopicClient shared_topic_client(
       hw, appmgr, "uart_client", 256,
-      {{"topic1", "libxr_def_domain"}});
+      {{"chassis_data"}});
 }
 
 class CarPublisher : public rclcpp::Node {
@@ -34,7 +34,7 @@ private:
     float ang_z;
   };
 
-  WheelMsg data;
+  WheelMsg data={0.0f,0.0f,0.0f};
 
   // LibXR
   std::unique_ptr<LibXR::HardwareContainer> peripherals_;

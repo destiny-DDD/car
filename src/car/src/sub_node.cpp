@@ -20,8 +20,10 @@ CarSubscription::CarSubscription(const std::string &name) : Node(name) {
       LibXR::Entry<LibXR::UART>({*uart_client_, {"uart_client"}}), 
     };
 
-  LibXR::Topic::Domain domain("libxr_def_domain");
-  wheel = LibXR::Topic::CreateTopic<WheelMsg>("topic1",&domain);
+  // LibXR::Topic::Domain domain("libxr_def_domain");
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
+
+  XRobotMain(peripherals);
 
 //   注册接收回调
   cb0 = LibXR::Topic::Callback::Create(

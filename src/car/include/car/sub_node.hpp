@@ -14,7 +14,7 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
 
   static SharedTopic shared_topic(
       hw, appmgr, "uart_client", 256,
-      {{"topic1", "libxr_def_domain"}});
+      {{"chassis_data"}});
 
   // static SharedTopicClient shared_topic_client(
   //     hw, appmgr, "uart_client", 256,

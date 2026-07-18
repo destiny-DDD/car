@@ -35,8 +35,8 @@ CarPublisher::CarPublisher(const std::string &name) : Node(name) {
 
 
   // 创建Topic
-  LibXR::Topic::Domain domain("libxr_def_domain");
-  wheel = LibXR::Topic::CreateTopic<WheelMsg>("topic1",&domain);
+  // LibXR::Topic::Domain domain("libxr_def_domain");
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
 
   XRobotMain(peripherals);
   // 注册接收回调
