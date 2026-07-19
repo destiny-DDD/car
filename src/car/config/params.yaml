@@ -7,5 +7,9 @@
 
 /pub_node:
   ros__parameters:
-    pid: "7523"
-    vid: "1a86"
+    # ttl
+    # pid: "7523"
+    # vid: "1a86"
+    # linear
+    vid: "16d0"
+    pid: "1492"

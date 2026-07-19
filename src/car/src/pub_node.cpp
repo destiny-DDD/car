@@ -58,12 +58,8 @@ void CarPublisher::send_data_callback(
 void CarPublisher::ser(WheelMsg &speed) { wheel.Publish(speed); }
 
 void CarPublisher::InitParameter() {
-  // ttl
-  // pub_vid_ = this->declare_parameter<std::string>("vid", "1a86");
-  // pub_pid_ = this->declare_parameter<std::string>("pid", "7523");
-  // linear
-  auto vid = this->declare_parameter<std::string>("vid", "16d0");
-  auto pid = this->declare_parameter<std::string>("pid", "1492");
+  pub_vid_ = this->declare_parameter<std::string>("vid", "1a86");
+  pub_pid_ = this->declare_parameter<std::string>("pid", "7523");
 
   std::cout << "Get parameter: " << "pub_vid: " << pub_vid_
             << " pub_pid: " << pub_pid_ << '\n';
