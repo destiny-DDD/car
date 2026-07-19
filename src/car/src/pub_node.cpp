@@ -15,11 +15,11 @@ CarPublisher::CarPublisher(const std::string &name) : Node(name) {
   peripherals_ = std::make_unique<LibXR::HardwareContainer>();
   ramfs_ = std::make_unique<LibXR::RamFS>(); // 1a86:7523
   //ttl
-  // auto vid = this->declare_parameter<std::string>("vid", "1a86");
-  // auto pid = this->declare_parameter<std::string>("pid", "7523");
+  auto vid = this->declare_parameter<std::string>("vid", "1a86");
+  auto pid = this->declare_parameter<std::string>("pid", "7523");
   // linear
-  auto vid = this->declare_parameter<std::string>("vid", "16d0");
-  auto pid = this->declare_parameter<std::string>("pid", "1492");
+  // auto vid = this->declare_parameter<std::string>("vid", "16d0");
+  // auto pid = this->declare_parameter<std::string>("pid", "1492");
   uart_client_ = std::make_unique<LibXR::LinuxUART>(
       vid, pid, 115200, LibXR::LinuxUART::Parity::NO_PARITY, 8, 1);
   terminal_ = std::make_unique<LibXR::Terminal<1024, 64, 16, 128>>(*ramfs_);

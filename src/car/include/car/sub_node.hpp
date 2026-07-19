@@ -5,6 +5,9 @@
 #include "SharedTopicClient.hpp"
 #include "linux_uart.hpp"
 #include <rclcpp/rclcpp.hpp>
+#include <tf2_ros/transform_broadcaster.hpp>
+#include <tf2/LinearMath/Quaternion.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 namespace car_sub {
 
@@ -12,9 +15,8 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
   using namespace LibXR;
   static ApplicationManager appmgr;
 
-  static SharedTopic shared_topic(
-      hw, appmgr, "uart_client", 256,
-      {{"chassis_data"}});
+  static SharedTopic shared_topic(hw, appmgr, "uart_client", 256,
+                                  {{"chassis_data"}});
 
   // static SharedTopicClient shared_topic_client(
   //     hw, appmgr, "uart_client", 256,
@@ -24,12 +26,34 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
 class CarSubscription : public rclcpp::Node {
 private:
 
-  // send
+  //参数
+  std::string odom_frame_;
+  std::string child_frame_;
+
+  // 接收里程计数据
   struct WheelMsg {
     float speed_x;
     float speed_y;
     float ang_z;
   };
+  struct TfData {
+    float x_;
+    float y_;
+    float yaw_;
+  };
+
+  rclcpp::Time last_time_;
+  rclcpp::Time now_time_;
+  float dt;
+  //回调定时器创建
+  rclcpp::TimerBase::SharedPtr timer_;
+  //初始化tf
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  //广播tf
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_;
+
+  WheelMsg data = {0.0f, 0.0f, 0.0f};
+  TfData change = {0.0f, 0.0f, 0.0f};
 
   // LibXR
   std::unique_ptr<LibXR::HardwareContainer> peripherals_;
@@ -43,7 +67,7 @@ private:
 
 public:
   explicit CarSubscription(const std::string &name);
-  // void receive();
+  void TimeCallback();
 };
 
 } // namespace car_sub
