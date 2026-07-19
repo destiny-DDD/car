@@ -8,7 +8,7 @@ CarSubscription::CarSubscription(const std::string &name,
   InitParameter();
   LibXR::PlatformInit();
   peripherals_ = std::make_unique<LibXR::HardwareContainer>();
-  ramfs_ = std::make_unique<LibXR::RamFS>(); // 1a86:7523
+  ramfs_ = std::make_unique<LibXR::RamFS>();
   uart_client_ = std::make_unique<LibXR::LinuxUART>(
       sub_vid_, sub_pid_, 115200, LibXR::LinuxUART::Parity::NO_PARITY, 8, 1);
   terminal_ = std::make_unique<LibXR::Terminal<1024, 64, 16, 128>>(*ramfs_);
@@ -22,8 +22,9 @@ CarSubscription::CarSubscription(const std::string &name,
   };
 
   // LibXR::Topic::Domain domain("libxr_def_domain");
-  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_speed");
   XRobotMain(peripherals);
+
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
   tf_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -33,6 +34,8 @@ CarSubscription::CarSubscription(const std::string &name,
         self->data.speed_x = msg.speed_x;
         self->data.speed_y = msg.speed_y;
         self->data.ang_z = msg.ang_z;
+        std::cout << "sub " << self->data.speed_x << " " << self->data.speed_y << " "
+            << self->data.ang_z << std::endl;
       },
       this);
   wheel.RegisterCallback(cb0);
@@ -45,6 +48,8 @@ CarSubscription::CarSubscription(const std::string &name,
 }
 
 void CarSubscription::TimeCallback() {
+  // std::cout << "sub " << data.speed_x << " " << data.speed_y << " "
+  //           << data.ang_z << std::endl;
   now_time_ = this->now();
   dt = (now_time_ - last_time_).seconds();
   if (dt <= 0.0 || dt > 0.5) // 25倍时间间隔

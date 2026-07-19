@@ -1,7 +1,7 @@
 #ifndef __PUB_NODE_HPP_
 #define __PUB_NODE_HPP_
 
-#include "SharedTopic.hpp"
+// #include "SharedTopic.hpp"
 #include "SharedTopicClient.hpp"
 #include "linux_uart.hpp"
 #include <geometry_msgs/msg/twist.hpp>

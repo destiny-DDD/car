@@ -2,7 +2,7 @@
 #define __SUB_NODE_HPP_
 
 #include "SharedTopic.hpp"
-#include "SharedTopicClient.hpp"
+// #include "SharedTopicClient.hpp"
 #include "linux_uart.hpp"
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -16,7 +16,7 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
   static ApplicationManager appmgr;
 
   static SharedTopic shared_topic(hw, appmgr, "uart_client", 256,
-                                  {{"chassis_data"}});
+                                  {{"chassis_speed"}});
 
   // static SharedTopicClient shared_topic_client(
   //     hw, appmgr, "uart_client", 256,
