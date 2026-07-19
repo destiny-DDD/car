@@ -10,11 +10,11 @@ int main(int argc, char **argv) {
   rclcpp::NodeOptions options;
   options.arguments({"--ros-args", "--params-file", config_file_path});
   auto pub_node = std::make_shared<car_pub::CarPublisher>("pub_node", options);
-  auto sub_node =
-      std::make_shared<car_sub::CarSubscription>("sub_node", options);
+  // auto sub_node =
+  //     std::make_shared<car_sub::CarSubscription>("sub_node", options);
   auto executor = rclcpp::executors::MultiThreadedExecutor();
   executor.add_node(pub_node);
-  executor.add_node(sub_node);
+  // executor.add_node(sub_node);
   executor.spin();
   rclcpp::shutdown();
   return 0;

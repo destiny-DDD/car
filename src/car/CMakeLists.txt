@@ -33,5 +33,5 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-ament_auto_package(INSTALL_TO_SHARE ${PROJRCT_NAME} config)
+# USE_SCOPED_HEADER_INSTALL_DIR,放到下面的
+ament_auto_package( INSTALL_TO_SHARE config)
