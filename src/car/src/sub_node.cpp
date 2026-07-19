@@ -1,15 +1,16 @@
 #include "sub_node.hpp"
 
 namespace car_sub {
-CarSubscription::CarSubscription(const std::string &name) : Node(name) {
+CarSubscription::CarSubscription(const std::string &name,
+                                 const rclcpp::NodeOptions &options)
+    : Node(name, options) {
   // 串口初始化
+  InitParameter();
   LibXR::PlatformInit();
   peripherals_ = std::make_unique<LibXR::HardwareContainer>();
   ramfs_ = std::make_unique<LibXR::RamFS>(); // 1a86:7523
-  auto vid = this->declare_parameter<std::string>("vid", "1a86");
-  auto pid = this->declare_parameter<std::string>("pid", "7523");
   uart_client_ = std::make_unique<LibXR::LinuxUART>(
-      vid, pid, 115200, LibXR::LinuxUART::Parity::NO_PARITY, 8, 1);
+      sub_vid_, sub_pid_, 115200, LibXR::LinuxUART::Parity::NO_PARITY, 8, 1);
   terminal_ = std::make_unique<LibXR::Terminal<1024, 64, 16, 128>>(*ramfs_);
   term_thread_ = std::make_unique<LibXR::Thread>();
   term_thread_->Create(terminal_.get(),
@@ -25,13 +26,6 @@ CarSubscription::CarSubscription(const std::string &name) : Node(name) {
   XRobotMain(peripherals);
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
   tf_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-
-  // 创建参数
-  this->declare_parameter("odom_frame", "odom");
-  this->declare_parameter("child_frame", "base_footprint");
-  // 获取参数
-  this->get_parameter("odom_frame", odom_frame_);
-  this->get_parameter("child_frame", child_frame_);
 
   //   注册接收回调
   cb0 = LibXR::Topic::Callback::Create(
@@ -93,4 +87,16 @@ void CarSubscription::TimeCallback() {
 
   tf_->sendTransform(transform);
 }
+// 参数
+void CarSubscription::InitParameter() {
+  sub_vid_ = this->declare_parameter<std::string>("vid", "1a86");
+  sub_pid_ = this->declare_parameter<std::string>("pid", "7523");
+  odom_frame_ = this->declare_parameter("odom_frame", "odom");
+  child_frame_ = this->declare_parameter("child_frame", "base_footprint");
+
+  std::cout << "Get parameter: " << "sub_vid: " << sub_vid_
+            << " sub_pid: " << sub_pid_ << " odom_frame: " << odom_frame_
+            << " child_frame: " << child_frame_ << '\n';
+}
+
 } // namespace car_sub

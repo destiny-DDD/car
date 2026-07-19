@@ -34,4 +34,4 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_auto_package(INSTALL_TO_SHARE ${PROJRCT_NAME})
+ament_auto_package(INSTALL_TO_SHARE ${PROJRCT_NAME} config)

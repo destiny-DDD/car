@@ -5,6 +5,7 @@
 #include "SharedTopicClient.hpp"
 #include "linux_uart.hpp"
 #include <geometry_msgs/msg/twist.hpp>
+#include <rclcpp/node_options.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 namespace car_pub {
@@ -17,9 +18,8 @@ static void XRobotMain(LibXR::HardwareContainer &hw) {
   //     hw, appmgr, "uart_client", 256,
   //     {{"topic1", "libxr_def_domain"}});
 
-  static SharedTopicClient shared_topic_client(
-      hw, appmgr, "uart_client", 256,
-      {{"chassis_data"}});
+  static SharedTopicClient shared_topic_client(hw, appmgr, "uart_client", 256,
+                                               {{"chassis_data"}});
 }
 
 class CarPublisher : public rclcpp::Node {
@@ -34,7 +34,7 @@ private:
     float ang_z;
   };
 
-  WheelMsg data={0.0f,0.0f,0.0f};
+  WheelMsg data = {0.0f, 0.0f, 0.0f};
 
   // LibXR
   std::unique_ptr<LibXR::HardwareContainer> peripherals_;
@@ -43,11 +43,17 @@ private:
   std::unique_ptr<LibXR::Terminal<1024, 64, 16, 128>> terminal_;
   std::unique_ptr<LibXR::Thread> term_thread_;
 
+  std::string pub_vid_;
+  std::string pub_pid_;
+
   LibXR::Topic wheel;
   // LibXR::Topic::Callback cb0;
 
+  void InitParameter();
+
 public:
-  explicit CarPublisher(const std::string &name);
+  explicit CarPublisher(const std::string &name,
+                        const rclcpp::NodeOptions &options);
   void send_data_callback(const geometry_msgs::msg::Twist::SharedPtr msg_data);
   void ser(WheelMsg &speed);
 };
