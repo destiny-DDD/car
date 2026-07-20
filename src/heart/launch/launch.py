@@ -5,11 +5,19 @@ from ament_index_python import get_package_share_directory
 
 
 def generate_launch_description():
-    pkg_dir = get_package_share_directory("fang")
+    pkg_dir_heart = get_package_share_directory("heart")
+    pkg_dir_car = get_package_share_directory("car")
+    pkg_dir_MID360=get_package_share_directory("livox_ros_driver2")
 
     # 默认 xacro 文件路径
-    xacro_file = os.path.join(pkg_dir, "urdf", "car.urdf.xacro")
-    default_rviz_config_path=os.path.join(pkg_dir,"config","rviz.rviz")
+    xacro_file = os.path.join(pkg_dir_heart, "urdf", "car.urdf.xacro")
+    default_rviz_config_path=os.path.join(pkg_dir_heart,"config","rviz.rviz")
+    MID360_launch = os.path.join(
+        pkg_dir_MID360,"launch_ROS2","rviz_MID360_launch.py"
+    )
+    car_launch = os.path.join(
+        pkg_dir_car,"launch","car_launch.py"
+    )
 
     action_declare_arg_mode_path=launch.actions.DeclareLaunchArgument(
         name='model',
@@ -40,12 +48,26 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         arguments=['-d',default_rviz_config_path],
-   )
+    )
+
+    action_car_launch = launch.actions.IncludeLaunchDescription(
+        launch.launch_description_sources.PythonLaunchDescriptionSource(
+            car_launch
+        )
+    )
+    
+    action_MID360_launch = launch.actions.IncludeLaunchDescription(
+        launch.launch_description_sources.PythonLaunchDescriptionSource(
+            MID360_launch
+        )
+    )
 
     return launch.LaunchDescription([
+        action_car_launch,
         action_declare_arg_mode_path,
         action_robot_state_publisher,
         action_joint_state_publisher_gui,
         action_joint_state_publisher,
-        action_rviz_node
+        action_rviz_node,
+        action_MID360_launch,
     ])

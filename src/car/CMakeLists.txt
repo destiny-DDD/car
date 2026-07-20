@@ -34,4 +34,4 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 # USE_SCOPED_HEADER_INSTALL_DIR,放到下面的
-ament_auto_package( INSTALL_TO_SHARE config)
+ament_auto_package(INSTALL_TO_SHARE config launch)

@@ -22,7 +22,7 @@ CarSubscription::CarSubscription(const std::string &name,
   };
 
   // LibXR::Topic::Domain domain("libxr_def_domain");
-  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_speed");
+  wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
   XRobotMain(peripherals);
 
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
