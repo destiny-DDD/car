@@ -4,3 +4,4 @@ install
 log
 vision_dev
 src/livox_ros_driver2/COLCON_IGNORE
+src/yesense_ros2/COLCON_IGNORE
