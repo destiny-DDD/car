@@ -13,7 +13,7 @@ def generate_launch_description():
     xacro_file = os.path.join(pkg_dir_heart, "urdf", "car.urdf.xacro")
     default_rviz_config_path=os.path.join(pkg_dir_heart,"config","rviz.rviz")
     MID360_launch = os.path.join(
-        pkg_dir_MID360,"launch_ROS2","rviz_MID360_launch.py"
+        pkg_dir_MID360,"launch_ROS2","msg_MID360_launch.py"
     )
     car_launch = os.path.join(
         pkg_dir_car,"launch","car_launch.py"
@@ -66,7 +66,7 @@ def generate_launch_description():
         action_car_launch,
         action_declare_arg_mode_path,
         action_robot_state_publisher,
-        action_joint_state_publisher_gui,
+        # action_joint_state_publisher_gui,
         action_joint_state_publisher,
         action_rviz_node,
         action_MID360_launch,
