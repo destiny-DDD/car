@@ -36,8 +36,8 @@ private:
     float ang_z;
   };
   struct TfData {
-    float x_;
-    float y_;
+    float x_v;
+    float y_v;
     float yaw_;
   };
 
@@ -48,6 +48,8 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
   // 初始化tf
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  // 是否发布tf
+  bool tf_yn;
   // 广播tf
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_;
 

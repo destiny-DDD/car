@@ -20,7 +20,7 @@ def generate_launch_description():
         pkg_dir_imu,"launch","yesense_node.launch.py"
     )
     car_launch = os.path.join(
-        pkg_dir_car,"launch","car_launch.py"
+        pkg_dir_car,"launch","car_ekf_launch.py"
     )
 
     action_declare_arg_mode_path=launch.actions.DeclareLaunchArgument(

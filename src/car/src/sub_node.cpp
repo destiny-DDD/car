@@ -25,7 +25,7 @@ CarSubscription::CarSubscription(const std::string &name,
   wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
   XRobotMain(peripherals);
 
-  // odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+  odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
   tf_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   //   注册接收回调
@@ -34,8 +34,8 @@ CarSubscription::CarSubscription(const std::string &name,
         self->data.speed_x = msg.speed_x;
         self->data.speed_y = msg.speed_y;
         self->data.ang_z = msg.ang_z;
-        std::cout << "sub " << self->data.speed_x << " " << self->data.speed_y << " "
-            << self->data.ang_z << std::endl;
+        std::cout << "sub " << self->data.speed_x << " " << self->data.speed_y
+                  << " " << self->data.ang_z << std::endl;
       },
       this);
   wheel.RegisterCallback(cb0);
@@ -56,48 +56,58 @@ void CarSubscription::TimeCallback() {
     dt = 0.02;
   last_time_ = now_time_;
   change.yaw_ += data.ang_z * dt;
-  change.x_ += (data.speed_x * std::cos(change.yaw_) -
-                data.speed_y * std::sin(change.yaw_)) *
-               dt;
-  change.y_ += (data.speed_x * std::sin(change.yaw_) +
-                data.speed_y * std::cos(change.yaw_)) *
-               dt;
+  change.x_v += data.speed_x * std::cos(change.yaw_) -
+                data.speed_y * std::sin(change.yaw_);
+  change.y_v += data.speed_x * std::sin(change.yaw_) +
+                data.speed_y * std::cos(change.yaw_);
 
   tf2::Quaternion q;
   q.setRPY(0.0, 0.0, change.yaw_);
 
-  // auto odom_msg = nav_msgs::msg::Odometry();
-  // odom_msg.header.stamp = now_time_;
-  // odom_msg.header.frame_id = odom_frame_;
-  // odom_msg.child_frame_id = child_frame_;
-  // odom_msg.pose.pose.position.x = change.x_;
-  // odom_msg.pose.pose.position.y = change.y_;
-  // odom_msg.pose.pose.position.z = 0.0;
-  // odom_msg.pose.pose.orientation.x = q.x();
-  // odom_msg.pose.pose.orientation.y = q.y();
-  // odom_msg.pose.pose.orientation.z = q.z();
-  // odom_msg.pose.pose.orientation.w = q.w();
+  auto odom_msg = nav_msgs::msg::Odometry();
+  odom_msg.header.stamp = now_time_;
+  odom_msg.header.frame_id = odom_frame_;
+  odom_msg.child_frame_id = child_frame_;
+  odom_msg.pose.pose.position.x = change.x_v*dt;
+  odom_msg.pose.pose.position.y = change.y_v*dt;
+  odom_msg.pose.pose.position.z = 0.0;
+  odom_msg.pose.pose.orientation.x = q.x();
+  odom_msg.pose.pose.orientation.y = q.y();
+  odom_msg.pose.pose.orientation.z = q.z();
+  odom_msg.pose.pose.orientation.w = q.w();
+  odom_msg.twist.twist.linear.x = change.x_v;
+  odom_msg.twist.twist.linear.y = change.y_v;
+  odom_msg.twist.twist.linear.z = 0.0;
+  odom_msg.twist.twist.angular.x = 0.0;
+  odom_msg.twist.twist.angular.y = 0.0;
+  odom_msg.twist.twist.angular.z = data.ang_z;
 
-  auto transform = geometry_msgs::msg::TransformStamped();
-  transform.header.stamp = now_time_;
-  transform.header.frame_id = odom_frame_;
-  transform.child_frame_id = child_frame_;
-  transform.transform.translation.x = change.x_;
-  transform.transform.translation.y = change.y_;
-  transform.transform.translation.z = 0.0;
-  transform.transform.rotation.x = q.x();
-  transform.transform.rotation.y = q.y();
-  transform.transform.rotation.z = q.z();
-  transform.transform.rotation.w = q.w();
+  odom_pub_->publish(odom_msg);
 
-  tf_->sendTransform(transform);
+  if (tf_yn) {
+    auto transform = geometry_msgs::msg::TransformStamped();
+    transform.header.stamp = now_time_;
+    transform.header.frame_id = odom_frame_;
+    transform.child_frame_id = child_frame_;
+    transform.transform.translation.x = change.x_v*dt;
+    transform.transform.translation.y = change.y_v*dt;
+    transform.transform.translation.z = 0.0;
+    transform.transform.rotation.x = q.x();
+    transform.transform.rotation.y = q.y();
+    transform.transform.rotation.z = q.z();
+    transform.transform.rotation.w = q.w();
+
+    tf_->sendTransform(transform);
+  }
 }
+
 // 参数
 void CarSubscription::InitParameter() {
   sub_vid_ = this->declare_parameter<std::string>("vid", "1a86");
   sub_pid_ = this->declare_parameter<std::string>("pid", "7523");
   odom_frame_ = this->declare_parameter("odom_frame", "odom");
   child_frame_ = this->declare_parameter("child_frame", "base_footprint");
+  tf_yn = this->declare_parameter<bool>("tf_yn", true);
 
   std::cout << "Get parameter: " << "sub_vid: " << sub_vid_
             << " sub_pid: " << sub_pid_ << " odom_frame: " << odom_frame_

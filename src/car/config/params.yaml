@@ -1,11 +1,15 @@
 /sub_node:
   ros__parameters:
-    child_frame: base_footprint
-    odom_frame: odom
+    child_frame: "base_footprint"
+    odom_frame: "odom"
+    # ttl
     pid: "7523"
     vid: "1a86"
+    # linear
     # vid: "16d0"
     # pid: "1492"
+    # 是否发布tf变换
+    tf_yn: false # true or false
 
 /pub_node:
   ros__parameters:

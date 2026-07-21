@@ -14,6 +14,9 @@
 #### *imu插件*
 `sudo apt install ros-jazzy-rviz-imu-plugin`
 
+#### *融合*
+`sudo apt install ros-jazzy-robot-localization`
+
 ### 编译
 #### **获取代码：**
 `git clone https://github.com/destiny-DDD/car.git`
