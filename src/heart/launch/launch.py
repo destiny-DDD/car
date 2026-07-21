@@ -12,7 +12,7 @@ def generate_launch_description():
 
     # 默认 xacro 文件路径
     xacro_file = os.path.join(pkg_dir_heart, "urdf", "car.urdf.xacro")
-    default_rviz_config_path=os.path.join(pkg_dir_heart,"config","rviz.rviz")
+    default_rviz_config_path=os.path.join(pkg_dir_heart,"config","rviz2.rviz")
     MID360_launch = os.path.join(
         pkg_dir_MID360,"launch_ROS2","msg_MID360_launch.py"
     )

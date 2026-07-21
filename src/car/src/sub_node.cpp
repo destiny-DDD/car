@@ -25,7 +25,7 @@ CarSubscription::CarSubscription(const std::string &name,
   wheel = LibXR::Topic::CreateTopic<WheelMsg>("chassis_data");
   XRobotMain(peripherals);
 
-  odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+  // odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
   tf_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   //   注册接收回调
@@ -66,17 +66,17 @@ void CarSubscription::TimeCallback() {
   tf2::Quaternion q;
   q.setRPY(0.0, 0.0, change.yaw_);
 
-  auto odom_msg = nav_msgs::msg::Odometry();
-  odom_msg.header.stamp = now_time_;
-  odom_msg.header.frame_id = odom_frame_;
-  odom_msg.child_frame_id = child_frame_;
-  odom_msg.pose.pose.position.x = change.x_;
-  odom_msg.pose.pose.position.y = change.y_;
-  odom_msg.pose.pose.position.z = 0.0;
-  odom_msg.pose.pose.orientation.x = q.x();
-  odom_msg.pose.pose.orientation.y = q.y();
-  odom_msg.pose.pose.orientation.z = q.z();
-  odom_msg.pose.pose.orientation.w = q.w();
+  // auto odom_msg = nav_msgs::msg::Odometry();
+  // odom_msg.header.stamp = now_time_;
+  // odom_msg.header.frame_id = odom_frame_;
+  // odom_msg.child_frame_id = child_frame_;
+  // odom_msg.pose.pose.position.x = change.x_;
+  // odom_msg.pose.pose.position.y = change.y_;
+  // odom_msg.pose.pose.position.z = 0.0;
+  // odom_msg.pose.pose.orientation.x = q.x();
+  // odom_msg.pose.pose.orientation.y = q.y();
+  // odom_msg.pose.pose.orientation.z = q.z();
+  // odom_msg.pose.pose.orientation.w = q.w();
 
   auto transform = geometry_msgs::msg::TransformStamped();
   transform.header.stamp = now_time_;
