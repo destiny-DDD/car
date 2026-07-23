@@ -1,4 +1,8 @@
 #include "sub_node.hpp"
+#include "std_msgs/msg/float32.hpp"
+#include <tf2/LinearMath/Matrix3x3.hpp>
+#include <tf2/LinearMath/Quaternion.hpp>
+#include <tf2/LinearMath/Vector3.hpp>
 
 namespace car_sub {
 CarSubscription::CarSubscription(const std::string &name,
@@ -26,6 +30,24 @@ CarSubscription::CarSubscription(const std::string &name,
   XRobotMain(peripherals);
 
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+  raw_yaw_pub_ = this->create_publisher<std_msgs::msg::Float32>("/raw_yaw", 10);
+  filted_yaw_pub_ =
+      this->create_publisher<std_msgs::msg::Float32>("/filted_yaw", 10);
+
+  filted_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+      "/odometry/filtered", 10, [this](const nav_msgs::msg::Odometry &msg) {
+        auto yaw_msg_ = std_msgs::msg::Float32();
+        auto q = tf2::Quaternion(
+            msg.pose.pose.orientation.x, msg.pose.pose.orientation.y,
+            msg.pose.pose.orientation.z, msg.pose.pose.orientation.w);
+        auto m = tf2::Matrix3x3(q);
+        double r, p, y;
+        m.getRPY(r, p, y);
+        auto yaw_msg = std_msgs::msg::Float32();
+        yaw_msg.data = y;
+        filted_yaw_pub_->publish(yaw_msg);
+      });
+
   tf_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   //   注册接收回调
@@ -56,27 +78,28 @@ void CarSubscription::TimeCallback() {
     dt = 0.02;
   last_time_ = now_time_;
   change.yaw_ += data.ang_z * dt;
-  change.x_v += data.speed_x * std::cos(change.yaw_) -
-                data.speed_y * std::sin(change.yaw_);
-  change.y_v += data.speed_x * std::sin(change.yaw_) +
-                data.speed_y * std::cos(change.yaw_);
+  change.x_ += (data.speed_x * std::cos(change.yaw_) -
+                data.speed_y * std::sin(change.yaw_)) *
+               dt;
+  change.y_ += (data.speed_x * std::sin(change.yaw_) +
+                data.speed_y * std::cos(change.yaw_)) *
+               dt;
 
   tf2::Quaternion q;
   q.setRPY(0.0, 0.0, change.yaw_);
 
-  auto odom_msg = nav_msgs::msg::Odometry();
   odom_msg.header.stamp = now_time_;
   odom_msg.header.frame_id = odom_frame_;
   odom_msg.child_frame_id = child_frame_;
-  odom_msg.pose.pose.position.x = change.x_v*dt;
-  odom_msg.pose.pose.position.y = change.y_v*dt;
+  odom_msg.pose.pose.position.x = change.x_;
+  odom_msg.pose.pose.position.y = change.y_;
   odom_msg.pose.pose.position.z = 0.0;
   odom_msg.pose.pose.orientation.x = q.x();
   odom_msg.pose.pose.orientation.y = q.y();
   odom_msg.pose.pose.orientation.z = q.z();
   odom_msg.pose.pose.orientation.w = q.w();
-  odom_msg.twist.twist.linear.x = change.x_v;
-  odom_msg.twist.twist.linear.y = change.y_v;
+  odom_msg.twist.twist.linear.x = data.speed_x;
+  odom_msg.twist.twist.linear.y = data.speed_y;
   odom_msg.twist.twist.linear.z = 0.0;
   odom_msg.twist.twist.angular.x = 0.0;
   odom_msg.twist.twist.angular.y = 0.0;
@@ -84,13 +107,16 @@ void CarSubscription::TimeCallback() {
 
   odom_pub_->publish(odom_msg);
 
+  auto raw_yaw_msg_ = std_msgs::msg::Float32();
+  raw_yaw_msg_.data = change.yaw_;
+  raw_yaw_pub_->publish(raw_yaw_msg_);
+
   if (tf_yn) {
-    auto transform = geometry_msgs::msg::TransformStamped();
     transform.header.stamp = now_time_;
     transform.header.frame_id = odom_frame_;
     transform.child_frame_id = child_frame_;
-    transform.transform.translation.x = change.x_v*dt;
-    transform.transform.translation.y = change.y_v*dt;
+    transform.transform.translation.x = change.x_;
+    transform.transform.translation.y = change.y_;
     transform.transform.translation.z = 0.0;
     transform.transform.rotation.x = q.x();
     transform.transform.rotation.y = q.y();

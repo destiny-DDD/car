@@ -4,8 +4,11 @@
 #include "SharedTopic.hpp"
 // #include "SharedTopicClient.hpp"
 #include "linux_uart.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "std_msgs/msg/float32.hpp"
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/subscription.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_ros/transform_broadcaster.hpp>
 
@@ -36,8 +39,8 @@ private:
     float ang_z;
   };
   struct TfData {
-    float x_v;
-    float y_v;
+    float x_;
+    float y_;
     float yaw_;
   };
 
@@ -46,12 +49,21 @@ private:
   float dt;
   // 回调定时器创建
   rclcpp::TimerBase::SharedPtr timer_;
-  // 初始化tf
+  // 里程计
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  nav_msgs::msg::Odometry odom_msg{};
+
+  // 调试用yaw
+  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr raw_yaw_pub_;
+  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr filted_yaw_pub_;
+  // 调试用融合后订阅
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr filted_sub_;
+
   // 是否发布tf
   bool tf_yn;
-  // 广播tf
+  // tf
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_;
+  geometry_msgs::msg::TransformStamped transform{};
 
   WheelMsg data = {0.0f, 0.0f, 0.0f};
   TfData change = {0.0f, 0.0f, 0.0f};
