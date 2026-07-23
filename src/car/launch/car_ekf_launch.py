@@ -14,6 +14,11 @@ def generate_launch_description():
         'config',
         'ekf.yaml',
     )
+    box_config = os.path.join(
+        get_package_share_directory('car'),
+        'config',
+        'filter_example.yaml',
+    )
 
     action_car=launch_ros.actions.Node(
         package='car',
@@ -28,7 +33,14 @@ def generate_launch_description():
         parameters=[ekf_config],
     )
 
+    action_box=launch_ros.actions.Node(
+        package="laser_filters",
+        executable="scan_to_scan_filter_chain",
+        parameters=[box_config],
+    )
+
     return launch.LaunchDescription([
         action_car,
         action_ekf,
+        action_box,
     ])

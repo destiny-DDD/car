@@ -1,0 +1,29 @@
+scan_to_scan_filter_chain:
+  ros__parameters:
+
+    input_topic: "/scan"
+    output_topic: "/scan_filtered"
+
+    filter1:
+      name: box_filter # 自定义名字
+      type: laser_filters/LaserScanBoxFilter # 插件名字
+      params:
+        box_frame: base_link # 参考
+        max_x: 0.5
+        max_y: 0.5
+        max_z: 0.5
+        min_x: -0.5
+        min_y: -0.5
+        min_z: -0.5
+        
+        invert: false # activate to remove all points outside of the box
+
+    filter2:
+      name: range_filter
+      type: laser_filters/LaserScanRangeFilter
+      params:
+        use_message_range_limits: false   # if not specified defaults to false
+        lower_threshold: 0.5              # if not specified defaults to 0.0
+        upper_threshold: 1.0              # if not specified defaults to 100000.0
+        lower_replacement_value: -.inf    # if not specified defaults to NaN
+        upper_replacement_value: .inf     # if not specified defaults to NaN

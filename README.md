@@ -11,12 +11,19 @@
 ##### **安装:**
 `sudo make install`
 
+---
 #### *imu插件*
 `sudo apt install ros-jazzy-rviz-imu-plugin`
 
+---
 #### *融合*
 `sudo apt install ros-jazzy-robot-localization`
 
+---
+#### *过滤*
+`sudo apt install ros-jazzy-laser-filters`
+
+---
 ### 编译
 #### **获取代码：**
 `git clone https://github.com/destiny-DDD/car.git`
@@ -28,15 +35,19 @@
 #### **以后构建均可使用：**
 `colcon build --symlink-install`
 
-### 妙妙小工具
-#### *usbtop*
-##### **install**
+## 妙妙小工具
+### *usbtop*
+#### **install**
 `sudo apt install usbtop`
-##### **启动**
+#### **启动**
 第一次下载要输入`sudo modprobe usbmon`，启动是`sudo usbtop`，这个小工具可以查看usb口是否有数据传入，是检查上下位机是否有数据的好东西
-#### *minicom*
-##### **install**
+### *minicom*
+#### **install**
 `sudo apt install minicom`
-##### **启动**
+#### **启动**
 更改设备`sudo minicom -s`
 启动`sudo minicom`
+
+## 其他
+`colcon build --package-select`
+
