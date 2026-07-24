@@ -73,7 +73,7 @@ def generate_launch_description():
     )
 
     return launch.LaunchDescription([
-        action_car_launch,
+        # action_car_launch,
         action_declare_arg_mode_path,
         action_robot_state_publisher,
         # action_joint_state_publisher_gui,
